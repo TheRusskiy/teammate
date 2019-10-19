@@ -2,6 +2,7 @@
   "name": "@teammate/server",
   "version": "1.0.0",
   "scripts": {
+    "format": "prettier --write \"src/**/*.ts\"",
     "test": "jest --forceExit --coverage --verbose",
     "watch-test": "npm run test -- --watchAll",
     "build-ts": "tsc",
@@ -29,8 +30,8 @@
     "@types/eslint": "^6.1.1",
     "@types/express": "^4.17.1",
     "@types/node": "^12.7.8",
-    "@types/ws": "^6.0.3",
     "@types/shelljs": "^0.8.5",
+    "@types/ws": "^6.0.3",
     "@typescript-eslint/eslint-plugin": "^2.3.1",
     "@typescript-eslint/parser": "^2.3.1",
     "chai": "^4.2.0",
@@ -38,9 +39,10 @@
     "eslint": "^6.4.0",
     "jest": "^24.9.0",
     "nodemon": "^1.19.2",
+    "prettier": "^1.18.2",
+    "shelljs": "^0.8.3",
     "ts-jest": "^24.1.0",
     "ts-node": "^8.4.1",
-    "typescript": "^3.6.3",
-    "shelljs": "^0.8.3"
+    "typescript": "^3.6.3"
   }
 }

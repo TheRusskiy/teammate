@@ -1,20 +1,9 @@
 import * as http from "http"
 import WebSocket from "ws"
-import { ClientCommand } from "../shared/clientCommand"
+import { ClientCommand } from "../shared/ClientCommand"
 import _ from "lodash"
 
-// import { ClientCommand } from "../shared/clientCommand";
-//
-export type Transport = {
-  // onConnected: (transport: Transport) => void
-  // close: () => void,
-  // command: (command: ClientCommand) => void
-}
-//
-// type OnConnect = (transport: Transport) => void
-type OnMessage = (command: ClientCommand) => void
-
-type OnConnected = (transport: Transport) => void
+type OnConnected = (transport: WebsocketTransport) => void
 
 type OnClose = () => void
 

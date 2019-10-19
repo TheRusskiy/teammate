@@ -1,4 +1,4 @@
-import { ClientCommand } from "../shared/clientCommand"
+import { ClientCommand } from "../shared/ClientCommand"
 
 export type Transport = {
   close: () => void

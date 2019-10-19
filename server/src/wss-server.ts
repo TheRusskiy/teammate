@@ -1,5 +1,5 @@
 import * as http from "http"
-import { ClientCommand } from "./shared/clientCommand"
+import { ClientCommand } from "./shared/ClientCommand"
 import WebsocketServer, { WebsocketTransport } from "./WebsocketTransport"
 
 const setupWebsocketServer = ({ server }: { server: http.Server }) => {

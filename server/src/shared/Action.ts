@@ -1,22 +1,30 @@
-type ACTION_TYPE = "some-action"
+import { Player } from "./Player"
 
 interface BaseAction {
   type: string
   data: object
 }
 
-type SomeAction = {
+export type UserAction = SomeAction
+
+type SomeAction = BaseAction & {
   type: "some-action"
   data: {
     something: string
   }
 }
 
-type OtherAction = {
-  type: "other-action"
+type BaseServerAction = BaseAction & {
+  server: true
+}
+
+type AddUserAction = BaseServerAction & {
+  type: "ADD_USER"
   data: {
-    other: string
+    user: Player
   }
 }
 
-export type Action = SomeAction | OtherAction
+export type ServerAction = AddUserAction
+
+export type Action = UserAction | ServerAction

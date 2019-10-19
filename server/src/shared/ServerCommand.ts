@@ -1,7 +1,15 @@
-export type SERVER_COMMAND_TYPE = "SET_STATE"
+import { State } from "./State"
 
-export type ServerCommand = {
-  type: SERVER_COMMAND_TYPE
+type GenericCommand = {
+  type: string
   data?: object
 }
 
+type SetStateCommand = GenericCommand & {
+  type: "SET_STATE"
+  data: {
+    state: State
+  }
+}
+
+export type ServerCommand = SetStateCommand

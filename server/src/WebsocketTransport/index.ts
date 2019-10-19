@@ -2,6 +2,7 @@ import * as http from "http"
 import WebSocket from "ws"
 import { ClientCommand } from "../shared/ClientCommand"
 import _ from "lodash"
+import { ServerCommand } from "../shared/ServerCommand"
 
 type OnConnected = (transport: WebsocketTransport) => void
 
@@ -20,6 +21,7 @@ type removeCallback = () => void
 export type WebsocketTransport = {
   onClientCommand: (callback: OnClientCommand) => void
   onClose: (callback: OnClose) => void
+  sendServerCommand: (serverCommand: ServerCommand) => void
 }
 
 export default function WebsocketServer({
@@ -59,9 +61,14 @@ export default function WebsocketServer({
       })
     })
 
+    const sendServerCommand = (serverCommand: ServerCommand) => {
+      ws.send(JSON.stringify(serverCommand))
+    }
+
     const transport: WebsocketTransport = {
       onClientCommand,
       onClose,
+      sendServerCommand,
     }
 
     onConnected(transport)

@@ -1,12 +1,24 @@
 import { Action } from "../Action"
 import { State } from "../State"
 
-const nextState = (state: State, action: Action): State => {
+const initialState: State = {
+  players: [],
+  texts: [],
+}
+
+const nextState = (state: State = initialState, action?: Action): State => {
+  if (!action) {
+    return state
+  }
   switch (action.type) {
     case "some-action":
       return state
-    case "other-action":
-      return state
+    case "ADD_USER": {
+      return {
+        ...state,
+        players: [...state.players, action.data.user],
+      }
+    }
   }
 }
 

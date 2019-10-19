@@ -1,6 +1,6 @@
 import React from "react"
 import "./App.css"
-import Game from "./Game"
+import GameWindow from "./GameWindow"
 
 const App: React.FC = () => {
   return (
@@ -8,7 +8,7 @@ const App: React.FC = () => {
       <div>
         <h1>Hello!</h1>
       </div>
-      <Game />
+      <GameWindow />
     </>
   )
 }

@@ -1,16 +1,14 @@
 import * as http from "http"
-import { ClientCommand } from "./shared/ClientCommand"
 import WebsocketServer, { WebsocketTransport } from "./WebsocketTransport"
+import Game from "./Game"
 
 const setupWebsocketServer = ({ server }: { server: http.Server }) => {
   const onConnected = (transport: WebsocketTransport) => {
     console.log("connected")
-    const onClientCommand = (command: ClientCommand) => {
-      console.log(command)
-    }
-    transport.onClientCommand(onClientCommand)
+    const game = new Game({ transport })
     transport.onClose(() => {
       console.log("disconnected")
+      game.stop()
     })
   }
 

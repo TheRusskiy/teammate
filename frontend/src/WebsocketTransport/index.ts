@@ -6,7 +6,7 @@ export type Transport = {
 }
 
 type OnConnect = (transport: Transport) => void
-type OnMessage = (data: object) => void
+type OnMessage = (data: any) => void
 type OnClose = () => void
 
 type TransportOptions = {

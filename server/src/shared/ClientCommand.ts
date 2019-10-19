@@ -1,3 +1,5 @@
+import { UserAction } from "./Action"
+
 type GenericCommand = {
   type: string
   data?: object
@@ -8,8 +10,10 @@ type StartGameCommand = GenericCommand & {
 }
 
 type ActionCommand = GenericCommand & {
-  type: "ACTION",
-  data: {}
+  type: "PLAYER_ACTION"
+  data: {
+    action: UserAction
+  }
 }
 
 export type ClientCommand = StartGameCommand | ActionCommand

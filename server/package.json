@@ -1,0 +1,46 @@
+{
+  "name": "@teammate/server",
+  "version": "1.0.0",
+  "scripts": {
+    "test": "jest --forceExit --coverage --verbose",
+    "watch-test": "npm run test -- --watchAll",
+    "build-ts": "tsc",
+    "watch-ts": "tsc -w",
+    "watch-shared": "nodemon --watch src/shared -e ts --exec \"ts-node copy-shared.ts\"",
+    "watch-node": "nodemon dist/server.js",
+    "watch": "concurrently -k -p \"[{name}]\" -n \"TypeScript,Node,Copy\" -c \"cyan.bold,green.bold,yellow.bold\" \"npm run watch-ts\" \"npm run watch-node\" \"npm run watch-shared\"",
+    "lint": "tsc --noEmit && eslint \"**/*.{js,ts}\" --quiet --fix"
+  },
+  "author": "",
+  "license": "MIT",
+  "keywords": [],
+  "description": "",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "compression": "^1.7.4",
+    "errorhandler": "^1.5.1",
+    "express": "^4.17.1",
+    "ws": "^7.1.2"
+  },
+  "devDependencies": {
+    "@types/body-parser": "^1.17.1",
+    "@types/concurrently": "^4.1.0",
+    "@types/errorhandler": "^0.0.32",
+    "@types/eslint": "^6.1.1",
+    "@types/express": "^4.17.1",
+    "@types/node": "^12.7.8",
+    "@types/ws": "^6.0.3",
+    "@types/shelljs": "^0.8.5",
+    "@typescript-eslint/eslint-plugin": "^2.3.1",
+    "@typescript-eslint/parser": "^2.3.1",
+    "chai": "^4.2.0",
+    "concurrently": "^4.1.2",
+    "eslint": "^6.4.0",
+    "jest": "^24.9.0",
+    "nodemon": "^1.19.2",
+    "ts-jest": "^24.1.0",
+    "ts-node": "^8.4.1",
+    "typescript": "^3.6.3",
+    "shelljs": "^0.8.3"
+  }
+}

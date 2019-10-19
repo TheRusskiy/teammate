@@ -5,7 +5,7 @@ const Game: React.FC = () => {
   useEffect(() => {
     const onConnect = (t: Transport) => {
       console.log("connected")
-      t.command({ commandType: "START_GAME" })
+      t.command({ type: "START_GAME" })
     }
 
     const onClose = () => {

@@ -1,22 +1,25 @@
 import * as http from "http"
-import WebSocket from "ws"
+import { ClientCommand } from "./shared/clientCommand"
+import WebsocketServer, { WebsocketTransport } from "./WebsocketTransport"
 
 const setupWebsocketServer = ({ server }: { server: http.Server }) => {
-  const wss = new WebSocket.Server({ server })
-
-  console.log("Websocket is setup")
-
-  wss.on("connection", function connection(ws) {
-    ws.on("message", function incoming(message) {
-      console.log("received: %s", message)
-    })
-
-    ws.send("something")
-
-    ws.on("close", function close() {
+  const onConnected = (transport: WebsocketTransport) => {
+    console.log("connected")
+    const onClientCommand = (command: ClientCommand) => {
+      console.log(command)
+    }
+    transport.onClientCommand(onClientCommand)
+    transport.onClose(() => {
       console.log("disconnected")
     })
+  }
+
+  WebsocketServer({
+    server,
+    onConnected,
   })
+
+  console.log("Websocket is setup")
 }
 
 export default setupWebsocketServer

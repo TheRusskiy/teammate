@@ -2,14 +2,19 @@ import * as http from "http"
 import WebsocketServer, { WebsocketTransport } from "./WebsocketTransport"
 import Game from "./Game"
 
+let game: Game = null
+
 const setupWebsocketServer = ({ server }: { server: http.Server }) => {
   const onConnected = (transport: WebsocketTransport) => {
     console.log("connected")
-    const game = new Game({ transport })
-    game.start()
+    if (!game) {
+      game = new Game()
+      game.start()
+    }
+    const removeClient = game.addClient(transport)
     transport.onClose(() => {
       console.log("disconnected")
-      game.stop()
+      removeClient()
     })
   }
 

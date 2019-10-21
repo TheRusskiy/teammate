@@ -4,10 +4,10 @@ import { ServerCommand } from "../shared/ServerCommand"
 
 const Game: React.FC = () => {
   const [gameState, setGameState] = useState({})
+  const [transport, setTransport] = useState()
   useEffect(() => {
     const onConnect = (t: Transport) => {
       console.log("connected")
-      t.command({ type: "START_GAME" })
     }
 
     const onClose = () => {
@@ -32,15 +32,23 @@ const Game: React.FC = () => {
       onMessage,
     })
 
+    setTransport(transport)
+
     return () => {
       transport.close()
     }
   }, [])
+  const startGame = () => {
+    transport.command({ type: "START_GAME" })
+  }
   return (
     <div>
       <span>Game</span>
       <br />
-      <pre>{JSON.stringify(gameState)}</pre>
+      <a href="#" onClick={startGame}>
+        Start Game
+      </a>
+      <pre>{JSON.stringify(gameState, null, 2)}</pre>
     </div>
   )
 }

@@ -17,15 +17,24 @@ const TICK_MS = 30
 const DISCARD_TICKS_OLDER_THAN_MS = 3000
 
 export default class Game {
-  private transport: WebsocketTransport
+  private connectedClients: WebsocketTransport[]
   private ticks: Tick[]
   private stopped: boolean
 
-  constructor({ transport }: { transport: WebsocketTransport }) {
-    this.transport = transport
+  constructor() {
+    this.connectedClients = []
     this.stopped = false
     this.ticks = []
+  }
+
+  public addClient = (transport: WebsocketTransport) => {
+    this.connectedClients.push(transport)
     transport.onClientCommand(this.onClientCommand)
+    return () => {
+      this.connectedClients.filter(client => {
+        return client !== transport
+      })
+    }
   }
 
   stop = () => {
@@ -105,11 +114,13 @@ export default class Game {
 
   private sendStateToClients = () => {
     const lastTick = this.ticks[this.ticks.length - 1]
-    this.transport.sendServerCommand({
-      type: "SET_STATE",
-      data: {
-        state: lastTick.stateAfter,
-      },
+    this.connectedClients.forEach(client => {
+      client.sendServerCommand({
+        type: "SET_STATE",
+        data: {
+          state: lastTick.stateAfter,
+        },
+      })
     })
   }
 

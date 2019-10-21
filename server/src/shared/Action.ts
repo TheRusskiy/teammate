@@ -25,6 +25,13 @@ type AddUserAction = BaseServerAction & {
   }
 }
 
-export type ServerAction = AddUserAction
+type TickAction = BaseServerAction & {
+  type: "TICK"
+  data: {
+    ms: number
+  }
+}
+
+export type ServerAction = AddUserAction | TickAction
 
 export type Action = UserAction | ServerAction

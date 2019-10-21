@@ -6,6 +6,7 @@ const setupWebsocketServer = ({ server }: { server: http.Server }) => {
   const onConnected = (transport: WebsocketTransport) => {
     console.log("connected")
     const game = new Game({ transport })
+    game.start()
     transport.onClose(() => {
       console.log("disconnected")
       game.stop()

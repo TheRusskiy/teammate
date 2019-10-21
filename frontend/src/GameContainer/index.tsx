@@ -7,27 +7,16 @@ import GameWindow from "../GameWindow"
 import { MoveDirection } from "../shared/UserAction"
 import Keyboard from "../Keyboard"
 
-const GameContainer: React.FC = () => {
-  const [gameState, setGameState] = useState<State>(nextState(undefined))
-  const [transport, setTransport] = useState<Transport>()
-  const [userId, setUserId] = useState()
+type Props = {}
+type ComponentState = {
+  transport?: Transport
+  gameState?: State
+  userId?: string
+}
+class GameContainer extends React.Component<Props> {
+  state: ComponentState = {}
 
-  const onMessage = (data: any) => {
-    const command: ServerCommand = data
-    // console.log(command)
-    switch (command.type) {
-      case "SET_STATE": {
-        setGameState(command.data.state)
-        break
-      }
-      case "ID_GENERATED": {
-        setUserId(command.data.id)
-        break
-      }
-    }
-  }
-
-  useEffect(() => {
+  componentDidMount() {
     const onConnect = (t: Transport) => {
       console.log("connected")
     }
@@ -40,27 +29,51 @@ const GameContainer: React.FC = () => {
       host: "ws://localhost:3001",
       onConnect,
       onClose,
-      onMessage,
+      onMessage: this.onMessage,
     })
 
-    setTransport(transport)
-
-    return () => {
-      transport.close()
-    }
-  }, [])
-  const startGame = (event: MouseEvent) => {
-    event.preventDefault()
-    if (!transport) return
-    transport.command({
-      type: "START_GAME",
-      userId,
+    this.setState({
+      transport,
     })
   }
-  const moveInDirection = (
-    transport: Transport,
-    direction: MoveDirection
-  ) => () => {
+
+  onMessage = (data: any) => {
+    const command: ServerCommand = data
+    // console.log(command)
+    switch (command.type) {
+      case "SET_STATE": {
+        this.setState({
+          gameState: command.data.state,
+        })
+        break
+      }
+      case "ID_GENERATED": {
+        this.setState({
+          userId: command.data.id,
+        })
+        break
+      }
+    }
+  }
+
+  componentWillUnmount() {
+    if (this.state.transport) {
+      this.state.transport.close()
+    }
+  }
+
+  startGame = (event: MouseEvent) => {
+    event.preventDefault()
+    if (!this.state.transport || !this.state.userId) return
+    this.state.transport.command({
+      type: "START_GAME",
+      userId: this.state.userId,
+    })
+  }
+
+  moveInDirection = (transport?: Transport, direction?: MoveDirection) => {
+    const { userId } = this.state
+    if (!userId || !transport || !direction) return
     transport.command({
       type: "PLAYER_ACTION",
       data: {
@@ -76,41 +89,76 @@ const GameContainer: React.FC = () => {
     })
   }
 
-  return (
-    <div>
-      <span>Game</span>
-      <br />
-      <a href="#" onClick={startGame}>
-        Start Game
-      </a>
-      <pre>{JSON.stringify(gameState, null, 2)}</pre>
-      <GameWindow gameState={gameState} />
-      {transport && (
-        <>
-          <Keyboard
-            keyValue="ArrowUp"
-            onPress={moveInDirection(transport, "up")}
-            onRelease={moveInDirection(transport, "stop-up")}
-          />
-          <Keyboard
-            keyValue="ArrowDown"
-            onPress={moveInDirection(transport, "down")}
-            onRelease={moveInDirection(transport, "stop-down")}
-          />
-          <Keyboard
-            keyValue="ArrowLeft"
-            onPress={moveInDirection(transport, "left")}
-            onRelease={moveInDirection(transport, "stop-left")}
-          />
-          <Keyboard
-            keyValue="ArrowRight"
-            onPress={moveInDirection(transport, "right")}
-            onRelease={moveInDirection(transport, "stop-right")}
-          />
-        </>
-      )}
-    </div>
-  )
+  moveUp = () => {
+    this.moveInDirection(this.state.transport, "up")
+  }
+
+  stopMoveUp = () => {
+    this.moveInDirection(this.state.transport, "stop-up")
+  }
+
+  moveDown = () => {
+    this.moveInDirection(this.state.transport, "down")
+  }
+
+  stopMoveDown = () => {
+    this.moveInDirection(this.state.transport, "stop-down")
+  }
+
+  moveLeft = () => {
+    this.moveInDirection(this.state.transport, "left")
+  }
+
+  stopMoveLeft = () => {
+    this.moveInDirection(this.state.transport, "stop-left")
+  }
+
+  moveRight = () => {
+    this.moveInDirection(this.state.transport, "right")
+  }
+
+  stopMoveRight = () => {
+    this.moveInDirection(this.state.transport, "stop-right")
+  }
+
+  render() {
+    const { transport, gameState } = this.state
+    return (
+      <div>
+        <span>Game</span>
+        <br />
+        <a href="#" onClick={this.startGame}>
+          Start Game
+        </a>
+        <pre>{JSON.stringify(gameState, null, 2)}</pre>
+        {gameState && <GameWindow gameState={gameState} />}
+        {transport && (
+          <>
+            <Keyboard
+              keyValue="ArrowUp"
+              onPress={this.moveUp}
+              onRelease={this.stopMoveUp}
+            />
+            <Keyboard
+              keyValue="ArrowDown"
+              onPress={this.moveDown}
+              onRelease={this.stopMoveDown}
+            />
+            <Keyboard
+              keyValue="ArrowLeft"
+              onPress={this.moveLeft}
+              onRelease={this.stopMoveLeft}
+            />
+            <Keyboard
+              keyValue="ArrowRight"
+              onPress={this.moveRight}
+              onRelease={this.stopMoveRight}
+            />
+          </>
+        )}
+      </div>
+    )
+  }
 }
 
 export default GameContainer

@@ -32,36 +32,22 @@ const keyboardSubscriber = (value: KeyValue) => {
 
   key.upHandler = event => {
     if ((event as KeyboardEvent).key === key.value) {
-      console.log("UP", key.value)
-      // console.log("state.isUp", state.isUp)
-      // console.log("state.isDown", state.isDown)
-      console.log(state)
       if (state.isDown && key.release) {
         key.release()
       }
       state.isDown = false
       state.isUp = true
-      console.log(state)
-      // console.log("state.isUp", state.isUp)
-      // console.log("state.isDown", state.isDown)
       event.preventDefault()
     }
   }
 
   key.downHandler = event => {
     if ((event as KeyboardEvent).key === key.value) {
-      console.log("DOWN", key.value)
-      console.log(state)
-      // console.log("isUp", state.isUp)
-      // console.log("state.isDown", state.isDown)
       if (state.isUp && key.press) {
         key.press()
       }
       state.isDown = true
       state.isUp = false
-      console.log(state)
-      // console.log("state.isUp", state.isUp)
-      // console.log("state.isDown", state.isDown)
       event.preventDefault()
     }
   }

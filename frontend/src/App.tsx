@@ -1,6 +1,6 @@
 import React from "react"
 import "./App.css"
-import GameWindow from "./GameWindow"
+import GameWindow from "./GameContainer"
 
 const App: React.FC = () => {
   return (

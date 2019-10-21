@@ -11,7 +11,15 @@ type SomeAction = BaseUserAction & {
   }
 }
 
-export type MoveDirection = "left" | "right" | "up" | "down"
+export type MoveDirection =
+  | "left"
+  | "right"
+  | "up"
+  | "down"
+  | "stop-left"
+  | "stop-right"
+  | "stop-up"
+  | "stop-down"
 
 type ArrowAction = BaseUserAction & {
   type: "MOVE_TANK"

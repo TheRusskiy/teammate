@@ -39,7 +39,6 @@ export default class GameRenderer {
     })
 
     tanksToRemove.forEach(drawing => {
-      console.log("removing tank", drawing)
       drawing.graphics.destroy()
       this.renderState.tanks = this.renderState.tanks.filter(t => t !== drawing)
     })
@@ -63,7 +62,6 @@ export default class GameRenderer {
     graphics.drawRect(0, 0, 20, 20)
     graphics.endFill()
     this.setCoords(graphics, tank)
-    console.log(graphics)
     this.app.stage.addChild(graphics)
     const drawing = {
       graphics,
@@ -71,7 +69,6 @@ export default class GameRenderer {
       id: this.tankId(tank),
     }
     this.renderState.tanks.push(drawing)
-    console.log("rendered tank", drawing)
   }
 
   private updateTank = ({

@@ -1,4 +1,4 @@
-import React, { useEffect } from "react"
+import React from "react"
 import { State } from "../shared/State"
 import * as PIXI from "pixi.js"
 import GameRenderer from "../GameRenderer"

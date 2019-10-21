@@ -1,15 +1,32 @@
-import React, { useEffect, useState, MouseEvent } from "react"
+import React, { useEffect, useState, MouseEvent, useMemo } from "react"
 import WebsocketTransport, { Transport } from "../WebsocketTransport"
 import { ServerCommand } from "../shared/ServerCommand"
 import { State } from "../shared/State"
 import nextState from "../shared/nextState"
 import GameWindow from "../GameWindow"
 import { MoveDirection } from "../shared/UserAction"
+import Keyboard from "../Keyboard"
 
 const GameContainer: React.FC = () => {
   const [gameState, setGameState] = useState<State>(nextState(undefined))
   const [transport, setTransport] = useState<Transport>()
   const [userId, setUserId] = useState()
+
+  const onMessage = (data: any) => {
+    const command: ServerCommand = data
+    // console.log(command)
+    switch (command.type) {
+      case "SET_STATE": {
+        setGameState(command.data.state)
+        break
+      }
+      case "ID_GENERATED": {
+        setUserId(command.data.id)
+        break
+      }
+    }
+  }
+
   useEffect(() => {
     const onConnect = (t: Transport) => {
       console.log("connected")
@@ -17,21 +34,6 @@ const GameContainer: React.FC = () => {
 
     const onClose = () => {
       console.log("disconnected")
-    }
-
-    const onMessage = (data: any) => {
-      const command: ServerCommand = data
-      // console.log(command)
-      switch (command.type) {
-        case "SET_STATE": {
-          setGameState(command.data.state)
-          break
-        }
-        case "ID_GENERATED": {
-          setUserId(command.data.id)
-          break
-        }
-      }
     }
 
     const transport = WebsocketTransport({
@@ -55,7 +57,10 @@ const GameContainer: React.FC = () => {
       userId,
     })
   }
-  const moveInDirection = (transport: Transport, direction: MoveDirection) => {
+  const moveInDirection = (
+    transport: Transport,
+    direction: MoveDirection
+  ) => () => {
     transport.command({
       type: "PLAYER_ACTION",
       data: {
@@ -70,26 +75,7 @@ const GameContainer: React.FC = () => {
       userId,
     })
   }
-  const clickLeft = (event: MouseEvent) => {
-    event.preventDefault()
-    if (!transport) return
-    moveInDirection(transport, "left")
-  }
-  const clickRight = (event: MouseEvent) => {
-    event.preventDefault()
-    if (!transport) return
-    moveInDirection(transport, "right")
-  }
-  const clickUp = (event: MouseEvent) => {
-    event.preventDefault()
-    if (!transport) return
-    moveInDirection(transport, "up")
-  }
-  const clickDown = (event: MouseEvent) => {
-    event.preventDefault()
-    if (!transport) return
-    moveInDirection(transport, "down")
-  }
+
   return (
     <div>
       <span>Game</span>
@@ -97,24 +83,32 @@ const GameContainer: React.FC = () => {
       <a href="#" onClick={startGame}>
         Start Game
       </a>
-      <br />
-      <a href="#" onClick={clickLeft}>
-        Left
-      </a>
-      <br />
-      <a href="#" onClick={clickRight}>
-        Right
-      </a>
-      <br />
-      <a href="#" onClick={clickUp}>
-        Up
-      </a>
-      <br />
-      <a href="#" onClick={clickDown}>
-        Down
-      </a>
       <pre>{JSON.stringify(gameState, null, 2)}</pre>
       <GameWindow gameState={gameState} />
+      {transport && (
+        <>
+          <Keyboard
+            keyValue="ArrowUp"
+            onPress={moveInDirection(transport, "up")}
+            onRelease={moveInDirection(transport, "stop-up")}
+          />
+          <Keyboard
+            keyValue="ArrowDown"
+            onPress={moveInDirection(transport, "down")}
+            onRelease={moveInDirection(transport, "stop-down")}
+          />
+          <Keyboard
+            keyValue="ArrowLeft"
+            onPress={moveInDirection(transport, "left")}
+            onRelease={moveInDirection(transport, "stop-left")}
+          />
+          <Keyboard
+            keyValue="ArrowRight"
+            onPress={moveInDirection(transport, "right")}
+            onRelease={moveInDirection(transport, "stop-right")}
+          />
+        </>
+      )}
     </div>
   )
 }

@@ -8,6 +8,8 @@ export type Position = {
 
 export type TankState = Position & {
   userId: string
+  xSpeed: number
+  ySpeed: number
 }
 
 export type MutableState = {

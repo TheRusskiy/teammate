@@ -20,19 +20,35 @@ const reducer = (draft: MutableState, action?: Action) => {
       if (!tank) return
       switch (action.data.direction) {
         case "up": {
-          tank.y += 1
+          tank.ySpeed = 1
+          return
+        }
+        case "stop-up": {
+          tank.ySpeed = 0
           return
         }
         case "down": {
-          tank.y -= 1
+          tank.ySpeed = -1
+          return
+        }
+        case "stop-down": {
+          tank.ySpeed = 0
           return
         }
         case "left": {
-          tank.x -= 1
+          tank.xSpeed = -1
+          return
+        }
+        case "stop-left": {
+          tank.xSpeed = 0
           return
         }
         case "right": {
-          tank.x += 1
+          tank.xSpeed = 1
+          return
+        }
+        case "stop-right": {
+          tank.xSpeed = 0
           return
         }
       }
@@ -40,6 +56,10 @@ const reducer = (draft: MutableState, action?: Action) => {
     }
     case "TICK": {
       draft.ms += action.data.ms
+      draft.tanks.forEach(tank => {
+        tank.x += tank.xSpeed
+        tank.y += tank.ySpeed
+      })
       return
     }
     case "ADD_USER": {
@@ -51,6 +71,8 @@ const reducer = (draft: MutableState, action?: Action) => {
       draft.tanks.push({
         x: 0,
         y: 0,
+        xSpeed: 0,
+        ySpeed: 0,
         userId: action.data.user.id,
       })
       return

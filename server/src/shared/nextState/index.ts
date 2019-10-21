@@ -21,6 +21,10 @@ const nextState = (state: State = initialState, action?: Action): State => {
       }
     }
     case "ADD_USER": {
+      if (state.players.find(p => p.id === action.data.user.id)) {
+        console.warn("This user is already in the game")
+        return state
+      }
       return {
         ...state,
         players: [...state.players, action.data.user],

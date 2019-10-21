@@ -3,12 +3,11 @@ import WebSocket from "ws"
 import { ClientCommand } from "../shared/ClientCommand"
 import _ from "lodash"
 import { ServerCommand } from "../shared/ServerCommand"
+import { OnClientCommand } from "../GameClient"
 
 type OnConnected = (transport: WebsocketTransport) => void
 
 type OnClose = () => void
-
-type OnClientCommand = (command: ClientCommand) => void
 
 type TransportOptions = {
   server: http.Server

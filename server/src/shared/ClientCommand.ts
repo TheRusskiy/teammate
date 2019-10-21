@@ -2,6 +2,7 @@ import { UserAction } from "./Action"
 
 type GenericCommand = {
   type: string
+  userId: string
   data?: object
 }
 

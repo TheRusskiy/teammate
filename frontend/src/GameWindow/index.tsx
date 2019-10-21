@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from "react"
+import React, { useEffect, useState, MouseEvent } from "react"
 import WebsocketTransport, { Transport } from "../WebsocketTransport"
 import { ServerCommand } from "../shared/ServerCommand"
 
 const Game: React.FC = () => {
   const [gameState, setGameState] = useState({})
   const [transport, setTransport] = useState()
+  const [userId, setUserId] = useState()
   useEffect(() => {
     const onConnect = (t: Transport) => {
       console.log("connected")
@@ -20,6 +21,10 @@ const Game: React.FC = () => {
       switch (command.type) {
         case "SET_STATE": {
           setGameState(command.data.state)
+          break
+        }
+        case "ID_GENERATED": {
+          setUserId(command.data.id)
           break
         }
       }
@@ -38,8 +43,12 @@ const Game: React.FC = () => {
       transport.close()
     }
   }, [])
-  const startGame = () => {
-    transport.command({ type: "START_GAME" })
+  const startGame = (event: MouseEvent) => {
+    event.preventDefault()
+    transport.command({
+      type: "START_GAME",
+      userId,
+    })
   }
   return (
     <div>

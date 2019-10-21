@@ -1,9 +1,8 @@
-import { WebsocketTransport } from "../WebsocketTransport"
 import { ClientCommand } from "../shared/ClientCommand"
 import nextState from "../shared/nextState"
 import { State } from "../shared/State"
 import { Action } from "../shared/Action"
-const uuidv1 = require("uuid/v1")
+import GameClient from "../GameClient"
 
 type Tick = {
   actions: Action[]
@@ -17,7 +16,7 @@ const TICK_MS = 30
 const DISCARD_TICKS_OLDER_THAN_MS = 3000
 
 export default class Game {
-  private connectedClients: WebsocketTransport[]
+  private connectedClients: GameClient[]
   private ticks: Tick[]
   private stopped: boolean
 
@@ -27,12 +26,18 @@ export default class Game {
     this.ticks = []
   }
 
-  public addClient = (transport: WebsocketTransport) => {
-    this.connectedClients.push(transport)
-    transport.onClientCommand(this.onClientCommand)
+  public addClient = (newClient: GameClient) => {
+    this.connectedClients.push(newClient)
+    newClient.onClientCommand(this.onClientCommand)
+    newClient.getTransport().sendServerCommand({
+      type: "ID_GENERATED",
+      data: {
+        id: newClient.getIdentifier(),
+      },
+    })
     return () => {
       this.connectedClients.filter(client => {
-        return client !== transport
+        return client !== newClient
       })
     }
   }
@@ -115,7 +120,7 @@ export default class Game {
   private sendStateToClients = () => {
     const lastTick = this.ticks[this.ticks.length - 1]
     this.connectedClients.forEach(client => {
-      client.sendServerCommand({
+      client.getTransport().sendServerCommand({
         type: "SET_STATE",
         data: {
           state: lastTick.stateAfter,
@@ -125,14 +130,13 @@ export default class Game {
   }
 
   private onClientCommand = (command: ClientCommand) => {
-    console.log(command)
     switch (command.type) {
       case "START_GAME": {
         const lastTick = this.ticks[this.ticks.length - 1]
         const action: Action = {
           server: true,
           type: "ADD_USER",
-          data: { user: { id: uuidv1() } },
+          data: { user: { id: command.userId } },
         }
         lastTick.actions.push(action)
         lastTick.processed = false

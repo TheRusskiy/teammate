@@ -11,5 +11,11 @@ type SetStateCommand = GenericCommand & {
     state: State
   }
 }
+type IdGeneratedCommand = GenericCommand & {
+  type: "ID_GENERATED"
+  data: {
+    id: string
+  }
+}
 
-export type ServerCommand = SetStateCommand
+export type ServerCommand = SetStateCommand | IdGeneratedCommand

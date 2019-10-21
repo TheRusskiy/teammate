@@ -1,6 +1,6 @@
 import { Action } from "../Action"
-import { State } from "../State"
-import _ from "lodash"
+import { State, MutableState } from "../State"
+import produce from "immer"
 
 const initialState: State = {
   players: [],
@@ -9,55 +9,37 @@ const initialState: State = {
   arrowsStates: {},
 }
 
-const nextState = (state: State = initialState, action?: Action): State => {
-  if (!action) {
-    return state
-  }
+const reducer = (draft: MutableState, action?: Action) => {
+  if (!action) return
+
   switch (action.type) {
     case "some-action":
-      return state
+      return
     case "ARROW": {
-      return {
-        ...state,
-        arrowsStates: {
-          ...state.arrowsStates,
-          [action.userId]: {
-            ...state.arrowsStates[action.userId],
-            [action.data.direction]:
-              state.arrowsStates[action.userId][action.data.direction] + 1,
-          },
-        },
-      }
+      draft.arrowsStates[action.userId][action.data.direction] += 1
+      return
     }
     case "TICK": {
-      return {
-        ...state,
-        ms: state.ms + action.data.ms,
-      }
+      draft.ms += action.data.ms
+      return
     }
     case "ADD_USER": {
-      if (state.players.find(p => p.id === action.data.user.id)) {
+      if (draft.players.find(p => p.id === action.data.user.id)) {
         console.warn("This user is already in the game")
-        return state
+        return
       }
-      return {
-        ...state,
-        players: [...state.players, action.data.user],
-        arrowsStates: {
-          ...state.arrowsStates,
-          [action.data.user.id]: { left: 0, right: 0 },
-        },
-      }
+      draft.players.push(action.data.user)
+      draft.arrowsStates[action.data.user.id] = { left: 0, right: 0 }
+      return
     }
     case "REMOVE_USER": {
-      return {
-        ...state,
-        players: state.players.filter(p => p.id !== action.data.userId),
-        arrowsStates: _.omit(state.arrowsStates, [action.data.userId]),
-      }
+      delete draft.arrowsStates[action.data.userId]
     }
   }
-  return state
 }
+
+type baseReducer = (state: MutableState, action?: Action) => void
+
+const nextState = produce<baseReducer>(reducer, initialState)
 
 export default nextState

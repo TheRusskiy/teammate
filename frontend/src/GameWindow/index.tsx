@@ -5,7 +5,7 @@ import { State } from "../shared/State"
 import nextState from "../shared/nextState"
 
 const Game: React.FC = () => {
-  const [gameState, setGameState] = useState<State>(nextState())
+  const [gameState, setGameState] = useState<State>(nextState(undefined))
   const [transport, setTransport] = useState<Transport>()
   const [userId, setUserId] = useState()
   useEffect(() => {

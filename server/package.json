@@ -21,6 +21,7 @@
     "compression": "^1.7.4",
     "errorhandler": "^1.5.1",
     "express": "^4.17.1",
+    "immer": "^4.0.1",
     "lodash": "^4.17.15",
     "uuid": "^3.3.3",
     "ws": "^7.1.2"
@@ -44,6 +45,7 @@
     "nodemon": "^1.19.2",
     "prettier": "^1.18.2",
     "shelljs": "^0.8.3",
+    "ts-essentials": "^3.0.2",
     "ts-jest": "^24.1.0",
     "ts-node": "^8.4.1",
     "typescript": "^3.6.3"

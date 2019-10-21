@@ -25,6 +25,13 @@ type AddUserAction = BaseServerAction & {
   }
 }
 
+type RemoveUserAction = BaseServerAction & {
+  type: "REMOVE_USER"
+  data: {
+    userId: string
+  }
+}
+
 type TickAction = BaseServerAction & {
   type: "TICK"
   data: {
@@ -32,6 +39,6 @@ type TickAction = BaseServerAction & {
   }
 }
 
-export type ServerAction = AddUserAction | TickAction
+export type ServerAction = AddUserAction | TickAction | RemoveUserAction
 
 export type Action = UserAction | ServerAction

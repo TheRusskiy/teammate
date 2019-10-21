@@ -30,7 +30,14 @@ const nextState = (state: State = initialState, action?: Action): State => {
         players: [...state.players, action.data.user],
       }
     }
+    case "REMOVE_USER": {
+      return {
+        ...state,
+        players: state.players.filter(p => p.id !== action.data.userId),
+      }
+    }
   }
+  return state
 }
 
 export default nextState

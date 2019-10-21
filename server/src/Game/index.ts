@@ -39,6 +39,12 @@ export default class Game {
       this.connectedClients.filter(client => {
         return client !== newClient
       })
+      const action: Action = {
+        server: true,
+        type: "REMOVE_USER",
+        data: { userId: newClient.getIdentifier() },
+      }
+      this.addActionToLastTick(action)
     }
   }
 
@@ -132,22 +138,24 @@ export default class Game {
   private onClientCommand = (command: ClientCommand) => {
     switch (command.type) {
       case "START_GAME": {
-        const lastTick = this.ticks[this.ticks.length - 1]
         const action: Action = {
           server: true,
           type: "ADD_USER",
           data: { user: { id: command.userId } },
         }
-        lastTick.actions.push(action)
-        lastTick.processed = false
+        this.addActionToLastTick(action)
         break
       }
       case "PLAYER_ACTION": {
-        const lastTick = this.ticks[this.ticks.length - 1]
-        lastTick.actions.push(command.data.action)
-        lastTick.processed = false
+        this.addActionToLastTick(command.data.action)
         break
       }
     }
+  }
+
+  private addActionToLastTick = (action: Action) => {
+    const lastTick = this.ticks[this.ticks.length - 1]
+    lastTick.actions.push(action)
+    lastTick.processed = false
   }
 }

@@ -1,10 +1,12 @@
 import React, { useEffect, useState, MouseEvent } from "react"
 import WebsocketTransport, { Transport } from "../WebsocketTransport"
 import { ServerCommand } from "../shared/ServerCommand"
+import { State } from "../shared/State"
+import nextState from "../shared/nextState"
 
 const Game: React.FC = () => {
-  const [gameState, setGameState] = useState({})
-  const [transport, setTransport] = useState()
+  const [gameState, setGameState] = useState<State>(nextState())
+  const [transport, setTransport] = useState<Transport>()
   const [userId, setUserId] = useState()
   useEffect(() => {
     const onConnect = (t: Transport) => {
@@ -45,8 +47,43 @@ const Game: React.FC = () => {
   }, [])
   const startGame = (event: MouseEvent) => {
     event.preventDefault()
+    if (!transport) return
     transport.command({
       type: "START_GAME",
+      userId,
+    })
+  }
+  const clickLeft = (event: MouseEvent) => {
+    event.preventDefault()
+    if (!transport) return
+    transport.command({
+      type: "PLAYER_ACTION",
+      data: {
+        action: {
+          type: "ARROW",
+          userId,
+          data: {
+            direction: "left",
+          },
+        },
+      },
+      userId,
+    })
+  }
+  const clickRight = (event: MouseEvent) => {
+    event.preventDefault()
+    if (!transport) return
+    transport.command({
+      type: "PLAYER_ACTION",
+      data: {
+        action: {
+          type: "ARROW",
+          userId,
+          data: {
+            direction: "right",
+          },
+        },
+      },
       userId,
     })
   }
@@ -56,6 +93,14 @@ const Game: React.FC = () => {
       <br />
       <a href="#" onClick={startGame}>
         Start Game
+      </a>
+      <br />
+      <a href="#" onClick={clickLeft}>
+        Left
+      </a>
+      <br />
+      <a href="#" onClick={clickRight}>
+        Right
       </a>
       <pre>{JSON.stringify(gameState, null, 2)}</pre>
     </div>

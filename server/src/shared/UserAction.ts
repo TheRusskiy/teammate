@@ -1,10 +1,21 @@
 import { BaseAction } from "./BaseAction"
 
-type SomeAction = BaseAction & {
+type BaseUserAction = BaseAction & {
+  userId: string
+}
+
+type SomeAction = BaseUserAction & {
   type: "some-action"
   data: {
     something: string
   }
 }
 
-export type UserAction = SomeAction
+type ArrowAction = BaseUserAction & {
+  type: "ARROW"
+  data: {
+    direction: "left" | "right"
+  }
+}
+
+export type UserAction = SomeAction | ArrowAction

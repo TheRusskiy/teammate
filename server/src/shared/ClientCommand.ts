@@ -1,4 +1,4 @@
-import { UserAction } from "./Action"
+import { UserAction } from "./UserAction"
 
 type GenericCommand = {
   type: string

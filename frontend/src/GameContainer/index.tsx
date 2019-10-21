@@ -3,6 +3,8 @@ import WebsocketTransport, { Transport } from "../WebsocketTransport"
 import { ServerCommand } from "../shared/ServerCommand"
 import { State } from "../shared/State"
 import nextState from "../shared/nextState"
+import GameWindow from "../GameWindow"
+import { MoveDirection } from "../shared/UserAction"
 
 const GameContainer: React.FC = () => {
   const [gameState, setGameState] = useState<State>(nextState(undefined))
@@ -19,7 +21,7 @@ const GameContainer: React.FC = () => {
 
     const onMessage = (data: any) => {
       const command: ServerCommand = data
-      console.log(command)
+      // console.log(command)
       switch (command.type) {
         case "SET_STATE": {
           setGameState(command.data.state)
@@ -53,39 +55,40 @@ const GameContainer: React.FC = () => {
       userId,
     })
   }
-  const clickLeft = (event: MouseEvent) => {
-    event.preventDefault()
-    if (!transport) return
+  const moveInDirection = (transport: Transport, direction: MoveDirection) => {
     transport.command({
       type: "PLAYER_ACTION",
       data: {
         action: {
-          type: "ARROW",
+          type: "MOVE_TANK",
           userId,
           data: {
-            direction: "left",
+            direction,
           },
         },
       },
       userId,
     })
   }
+  const clickLeft = (event: MouseEvent) => {
+    event.preventDefault()
+    if (!transport) return
+    moveInDirection(transport, "left")
+  }
   const clickRight = (event: MouseEvent) => {
     event.preventDefault()
     if (!transport) return
-    transport.command({
-      type: "PLAYER_ACTION",
-      data: {
-        action: {
-          type: "ARROW",
-          userId,
-          data: {
-            direction: "right",
-          },
-        },
-      },
-      userId,
-    })
+    moveInDirection(transport, "right")
+  }
+  const clickUp = (event: MouseEvent) => {
+    event.preventDefault()
+    if (!transport) return
+    moveInDirection(transport, "up")
+  }
+  const clickDown = (event: MouseEvent) => {
+    event.preventDefault()
+    if (!transport) return
+    moveInDirection(transport, "down")
   }
   return (
     <div>
@@ -102,7 +105,16 @@ const GameContainer: React.FC = () => {
       <a href="#" onClick={clickRight}>
         Right
       </a>
+      <br />
+      <a href="#" onClick={clickUp}>
+        Up
+      </a>
+      <br />
+      <a href="#" onClick={clickDown}>
+        Down
+      </a>
       <pre>{JSON.stringify(gameState, null, 2)}</pre>
+      <GameWindow gameState={gameState} />
     </div>
   )
 }

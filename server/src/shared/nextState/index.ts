@@ -6,7 +6,7 @@ const initialState: State = {
   players: [],
   texts: [],
   ms: 0,
-  arrowsStates: {},
+  tanks: [],
 }
 
 const reducer = (draft: MutableState, action?: Action) => {
@@ -15,8 +15,27 @@ const reducer = (draft: MutableState, action?: Action) => {
   switch (action.type) {
     case "some-action":
       return
-    case "ARROW": {
-      draft.arrowsStates[action.userId][action.data.direction] += 1
+    case "MOVE_TANK": {
+      const tank = draft.tanks.find(t => t.userId === action.userId)
+      if (!tank) return
+      switch (action.data.direction) {
+        case "up": {
+          tank.y += 1
+          return
+        }
+        case "down": {
+          tank.y -= 1
+          return
+        }
+        case "left": {
+          tank.x -= 1
+          return
+        }
+        case "right": {
+          tank.x += 1
+          return
+        }
+      }
       return
     }
     case "TICK": {
@@ -29,11 +48,16 @@ const reducer = (draft: MutableState, action?: Action) => {
         return
       }
       draft.players.push(action.data.user)
-      draft.arrowsStates[action.data.user.id] = { left: 0, right: 0 }
+      draft.tanks.push({
+        x: 0,
+        y: 0,
+        userId: action.data.user.id,
+      })
       return
     }
     case "REMOVE_USER": {
-      delete draft.arrowsStates[action.data.userId]
+      draft.players = draft.players.filter(p => p.id !== action.data.userId)
+      draft.tanks = draft.tanks.filter(t => t.userId !== action.data.userId)
     }
   }
 }

@@ -1,16 +1,20 @@
 import { Player } from "./Player"
 import { DeepReadonly } from "ts-essentials"
 
-type ArrowState = {
-  left: number
-  right: number
+export type Position = {
+  x: number
+  y: number
+}
+
+export type TankState = Position & {
+  userId: string
 }
 
 export type MutableState = {
   players: Player[]
   texts: string[]
   ms: number
-  arrowsStates: { [id: string]: ArrowState }
+  tanks: TankState[]
 }
 
 export type State = DeepReadonly<MutableState>

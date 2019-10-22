@@ -5,6 +5,27 @@ import { State } from "../shared/State"
 import GameWindow from "../GameWindow"
 import { MoveDirection } from "../shared/UserAction"
 import Keyboard from "../Keyboard"
+import styled from "styled-components"
+
+const ControlsWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+`
+
+const StartGameButton = styled.a`
+  display: inline-block;
+  padding: 10px 20px;
+  margin: 20px;
+  background-color: #ffa300;
+  color: black;
+  border-radius: 5px;
+  cursor: pointer;
+`
+
+const GameWindowWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+`
 
 type Props = {}
 type ComponentState = {
@@ -125,13 +146,12 @@ class GameContainer extends React.Component<Props> {
     const { transport, gameState } = this.state
     return (
       <div>
-        <span>Game</span>
-        <br />
-        <a href="#" onClick={this.startGame}>
-          Start Game
-        </a>
-        <pre>{JSON.stringify(gameState, null, 2)}</pre>
-        {gameState && <GameWindow gameState={gameState} />}
+        <ControlsWrapper>
+          <StartGameButton onClick={this.startGame}>Join Game</StartGameButton>
+        </ControlsWrapper>
+        <GameWindowWrapper>
+          {gameState && <GameWindow gameState={gameState} />}
+        </GameWindowWrapper>
         {transport && (
           <>
             <Keyboard
@@ -156,6 +176,7 @@ class GameContainer extends React.Component<Props> {
             />
           </>
         )}
+        <pre>{JSON.stringify(gameState, null, 2)}</pre>
       </div>
     )
   }

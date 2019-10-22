@@ -1,5 +1,12 @@
 import { Action } from "../Action"
-import { State, MutableState, TankState } from "../State"
+import {
+  State,
+  MutableState,
+  TankState,
+  TANK_WIDTH,
+  TANK_HEIGHT,
+  Position,
+} from "../State"
 import produce from "immer"
 
 const initialState: State = {
@@ -28,6 +35,22 @@ const setRotation = (tank: TankState) => {
   } else if (x > 0 && y > 0) {
     tank.rotation = 315
   }
+}
+
+const tankBounding = (tank: Position): number[] => {
+  return [
+    tank.x - TANK_WIDTH / 2,
+    tank.x + TANK_WIDTH / 2,
+    tank.y - TANK_HEIGHT / 2,
+    tank.y + TANK_HEIGHT / 2,
+  ]
+}
+
+const collision = (position1: Position, position2: Position): boolean => {
+  const [b1x1, b1x2, b1y1, b1y2] = tankBounding(position1)
+  const [b2x1, b2x2, b2y1, b2y2] = tankBounding(position2)
+
+  return b1x1 <= b2x2 && b1x2 >= b2x1 && b1y1 <= b2y2 && b1y2 >= b2y1
 }
 
 const reducer = (draft: MutableState, action?: Action) => {
@@ -79,11 +102,23 @@ const reducer = (draft: MutableState, action?: Action) => {
     case "TICK": {
       draft.ms += action.data.ms
       draft.tanks.forEach(tank => {
-        tank.x += tank.xSpeed
-        tank.y += tank.ySpeed
-        // acceleration
-        tank.xSpeed *= 1.05
-        tank.ySpeed *= 1.05
+        const newPosition: Position = {
+          x: tank.x + tank.xSpeed,
+          y: tank.y + tank.ySpeed,
+        }
+        const wouldCollide = draft.tanks.find(t => {
+          return t !== tank && collision(newPosition, t)
+        })
+        if (wouldCollide) {
+          tank.xSpeed = 0
+          tank.ySpeed = 0
+        } else {
+          tank.x = newPosition.x
+          tank.y = newPosition.y
+          // acceleration
+          tank.xSpeed *= 1.05
+          tank.ySpeed *= 1.05
+        }
         if (tank.xSpeed > 3) {
           tank.xSpeed = 3
         }

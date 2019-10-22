@@ -1,7 +1,7 @@
 import * as http from "http"
 import setupWebsocketServer from "./wss-server"
 
-const PORT = 3001
+const PORT = 3001 // 26501
 
 const server = http.createServer()
 

@@ -24,6 +24,7 @@ class GameContainer extends React.Component<Props> {
       console.log("disconnected")
     }
 
+    // "ws://85.236.188.110:26501"
     const transport = WebsocketTransport({
       host: "ws://localhost:3001",
       onConnect,

@@ -1,5 +1,5 @@
 import React from "react"
-import { State } from "../shared/State"
+import { State, MAP_HEIGHT, MAP_WIDTH } from "../shared/State"
 import * as PIXI from "pixi.js"
 import GameRenderer from "../GameRenderer"
 
@@ -15,8 +15,8 @@ class GameWindow extends React.Component<Props> {
     if (!root) throw new Error("#game-window not found")
     const app = new PIXI.Application({
       antialias: true,
-      width: 256,
-      height: 256,
+      width: MAP_WIDTH,
+      height: MAP_HEIGHT,
     })
     root.appendChild(app.view)
     this.root = root

@@ -13,6 +13,7 @@ class GameWindow extends React.Component<Props> {
   componentDidMount(): void {
     const root = document.getElementById("game-window")
     if (!root) throw new Error("#game-window not found")
+    PIXI.utils.skipHello()
     const app = new PIXI.Application({
       antialias: true,
       width: MAP_WIDTH,

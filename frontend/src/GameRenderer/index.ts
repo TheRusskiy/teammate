@@ -59,9 +59,11 @@ export default class GameRenderer {
   private renderTank = (tank: TankState) => {
     const graphics = new PIXI.Graphics()
     graphics.beginFill(0xde3249)
-    graphics.drawRect(0, 0, 20, 20)
+    graphics.drawRect(0 - 10, 0 - 10, 20, 20)
+    graphics.drawRect(20 - 10, 8 - 10, 8, 4)
     graphics.endFill()
     this.setCoords(graphics, tank)
+    graphics.angle = tank.rotation
     this.app.stage.addChild(graphics)
     const drawing = {
       graphics,
@@ -78,8 +80,8 @@ export default class GameRenderer {
     tank: TankState
     drawing: Drawing
   }) => {
-    // console.log("update tank", tank, drawing)
     this.setCoords(drawing.graphics, tank)
+    drawing.graphics.angle = tank.rotation
   }
 
   private tankId = (tank: TankState) => {

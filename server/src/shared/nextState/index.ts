@@ -1,5 +1,5 @@
 import { Action } from "../Action"
-import { State, MutableState } from "../State"
+import { State, MutableState, TankState } from "../State"
 import produce from "immer"
 
 const initialState: State = {
@@ -7,6 +7,27 @@ const initialState: State = {
   texts: [],
   ms: 0,
   tanks: [],
+}
+
+const setRotation = (tank: TankState) => {
+  const { ySpeed: y, xSpeed: x } = tank
+  if (x > 0 && y == 0) {
+    tank.rotation = 0
+  } else if (x > 0 && y < 0) {
+    tank.rotation = 45
+  } else if (x == 0 && y < 0) {
+    tank.rotation = 90
+  } else if (x < 0 && y < 0) {
+    tank.rotation = 135
+  } else if (x < 0 && y == 0) {
+    tank.rotation = 180
+  } else if (x < 0 && y > 0) {
+    tank.rotation = 225
+  } else if (x == 0 && y > 0) {
+    tank.rotation = 270
+  } else if (x > 0 && y > 0) {
+    tank.rotation = 315
+  }
 }
 
 const reducer = (draft: MutableState, action?: Action) => {
@@ -21,37 +42,38 @@ const reducer = (draft: MutableState, action?: Action) => {
       switch (action.data.direction) {
         case "up": {
           tank.ySpeed = 1
-          return
+          break
         }
         case "stop-up": {
           tank.ySpeed = 0
-          return
+          break
         }
         case "down": {
           tank.ySpeed = -1
-          return
+          break
         }
         case "stop-down": {
           tank.ySpeed = 0
-          return
+          break
         }
         case "left": {
           tank.xSpeed = -1
-          return
+          break
         }
         case "stop-left": {
           tank.xSpeed = 0
-          return
+          break
         }
         case "right": {
           tank.xSpeed = 1
-          return
+          break
         }
         case "stop-right": {
           tank.xSpeed = 0
-          return
+          break
         }
       }
+      setRotation(tank)
       return
     }
     case "TICK": {
@@ -74,6 +96,7 @@ const reducer = (draft: MutableState, action?: Action) => {
         xSpeed: 0,
         ySpeed: 0,
         userId: action.data.user.id,
+        rotation: 0,
       })
       return
     }

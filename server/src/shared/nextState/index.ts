@@ -81,6 +81,21 @@ const reducer = (draft: MutableState, action?: Action) => {
       draft.tanks.forEach(tank => {
         tank.x += tank.xSpeed
         tank.y += tank.ySpeed
+        // acceleration
+        tank.xSpeed *= 1.05
+        tank.ySpeed *= 1.05
+        if (tank.xSpeed > 3) {
+          tank.xSpeed = 3
+        }
+        if (tank.xSpeed < -3) {
+          tank.xSpeed = -3
+        }
+        if (tank.ySpeed > 3) {
+          tank.ySpeed = 3
+        }
+        if (tank.ySpeed < -3) {
+          tank.ySpeed = -3
+        }
       })
       return
     }

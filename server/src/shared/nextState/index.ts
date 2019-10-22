@@ -6,6 +6,8 @@ import {
   TANK_WIDTH,
   TANK_HEIGHT,
   Position,
+  MAP_WIDTH,
+  MAP_HEIGHT,
 } from "../State"
 import produce from "immer"
 
@@ -51,6 +53,21 @@ const collision = (position1: Position, position2: Position): boolean => {
   const [b2x1, b2x2, b2y1, b2y2] = tankBounding(position2)
 
   return b1x1 <= b2x2 && b1x2 >= b2x1 && b1y1 <= b2y2 && b1y2 >= b2y1
+}
+
+const insideMapBorder = (position: Position): boolean => {
+  const yOffset = -20 // dunno why
+  const [x1, x2, y1, y2] = tankBounding(position)
+  return (
+    x1 > 0 &&
+    x1 < MAP_WIDTH &&
+    x2 > 0 &&
+    x2 < MAP_WIDTH &&
+    y1 > yOffset &&
+    y1 < MAP_HEIGHT + yOffset &&
+    y2 > yOffset &&
+    y2 < MAP_HEIGHT + yOffset
+  )
 }
 
 const reducer = (draft: MutableState, action?: Action) => {
@@ -109,7 +126,8 @@ const reducer = (draft: MutableState, action?: Action) => {
         const wouldCollide = draft.tanks.find(t => {
           return t !== tank && collision(newPosition, t)
         })
-        if (wouldCollide) {
+        const wouldHitBorder = !insideMapBorder(newPosition)
+        if (wouldCollide || wouldHitBorder) {
           tank.xSpeed = 0
           tank.ySpeed = 0
         } else {
@@ -141,8 +159,8 @@ const reducer = (draft: MutableState, action?: Action) => {
       }
       draft.players.push(action.data.user)
       draft.tanks.push({
-        x: 0,
-        y: 0,
+        x: TANK_WIDTH / 2 + 1,
+        y: TANK_HEIGHT / 2 + 1,
         xSpeed: 0,
         ySpeed: 0,
         userId: action.data.user.id,

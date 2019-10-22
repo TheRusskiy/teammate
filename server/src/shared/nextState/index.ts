@@ -13,7 +13,6 @@ import produce from "immer"
 
 const initialState: State = {
   players: [],
-  texts: [],
   ms: 0,
   tanks: [],
 }

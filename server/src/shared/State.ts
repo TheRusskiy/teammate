@@ -20,7 +20,6 @@ export type TankState = Position & {
 
 export type MutableState = {
   players: Player[]
-  texts: string[]
   ms: number
   tanks: TankState[]
 }

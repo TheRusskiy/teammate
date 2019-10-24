@@ -91,7 +91,7 @@ class GameContainer extends React.Component<Props> {
     event.preventDefault()
     if (!this.state.transport || !this.state.userId) return
     this.state.transport.command({
-      type: "START_GAME",
+      type: "JOIN_GAME",
       userId: this.state.userId,
     })
   }

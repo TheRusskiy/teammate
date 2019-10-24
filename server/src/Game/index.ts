@@ -136,7 +136,7 @@ export default class Game {
 
   private onClientCommand = (command: ClientCommand) => {
     switch (command.type) {
-      case "START_GAME": {
+      case "JOIN_GAME": {
         const action: Action = {
           server: true,
           type: "ADD_USER",

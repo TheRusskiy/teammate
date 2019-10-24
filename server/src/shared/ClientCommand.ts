@@ -7,7 +7,7 @@ type GenericCommand = {
 }
 
 type StartGameCommand = GenericCommand & {
-  type: "START_GAME"
+  type: "JOIN_GAME"
 }
 
 type ActionCommand = GenericCommand & {

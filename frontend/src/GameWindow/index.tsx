@@ -2,8 +2,11 @@ import React from "react"
 import { State, MAP_HEIGHT, MAP_WIDTH } from "../shared/State"
 import * as PIXI from "pixi.js"
 import GameRenderer from "../GameRenderer"
+import nextState from "../shared/nextState"
 
-type Props = { gameState: State }
+type Props = { gameState: State; setGameState: (gameState: State) => void }
+
+const TICK_MS = 33
 
 class GameWindow extends React.Component<Props> {
   private root: HTMLElement | undefined
@@ -33,6 +36,14 @@ class GameWindow extends React.Component<Props> {
 
   gameLoop = () => {
     this.renderApp(this.props.gameState)
+    // const newState = nextState(this.props.gameState, {
+    //   type: 'TICK',
+    //   data: {
+    //     ms: TICK_MS
+    //   }
+    // })
+    // this.props.setGameState(newState)
+    // this.renderApp(this.props.gameState)
     requestAnimationFrame(this.gameLoop)
   }
 

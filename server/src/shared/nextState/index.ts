@@ -19,19 +19,19 @@ const initialState: State = {
 
 const setRotation = (tank: TankState) => {
   const { ySpeed: y, xSpeed: x } = tank
-  if (x > 0 && y == 0) {
+  if (x > 0 && y === 0) {
     tank.rotation = 0
   } else if (x > 0 && y < 0) {
     tank.rotation = 45
-  } else if (x == 0 && y < 0) {
+  } else if (x === 0 && y < 0) {
     tank.rotation = 90
   } else if (x < 0 && y < 0) {
     tank.rotation = 135
-  } else if (x < 0 && y == 0) {
+  } else if (x < 0 && y === 0) {
     tank.rotation = 180
   } else if (x < 0 && y > 0) {
     tank.rotation = 225
-  } else if (x == 0 && y > 0) {
+  } else if (x === 0 && y > 0) {
     tank.rotation = 270
   } else if (x > 0 && y > 0) {
     tank.rotation = 315

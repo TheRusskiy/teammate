@@ -63,9 +63,7 @@ class GameContainer extends React.Component<Props> {
     // console.log(command)
     switch (command.type) {
       case "SET_STATE": {
-        this.setState({
-          gameState: command.data.state,
-        })
+        this.setGameState(command.data.state)
         break
       }
       case "ID_GENERATED": {
@@ -75,6 +73,12 @@ class GameContainer extends React.Component<Props> {
         break
       }
     }
+  }
+
+  setGameState = (gameState: State) => {
+    this.setState({
+      gameState,
+    })
   }
 
   componentWillUnmount() {
@@ -150,7 +154,12 @@ class GameContainer extends React.Component<Props> {
           <StartGameButton onClick={this.startGame}>Join Game</StartGameButton>
         </ControlsWrapper>
         <GameWindowWrapper>
-          {gameState && <GameWindow gameState={gameState} />}
+          {gameState && (
+            <GameWindow
+              gameState={gameState}
+              setGameState={this.setGameState}
+            />
+          )}
         </GameWindowWrapper>
         {transport && (
           <>

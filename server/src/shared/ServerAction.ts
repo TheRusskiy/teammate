@@ -19,7 +19,7 @@ type RemoveUserAction = BaseServerAction & {
   }
 }
 
-type TickAction = BaseServerAction & {
+type TickAction = {
   type: "TICK"
   data: {
     ms: number

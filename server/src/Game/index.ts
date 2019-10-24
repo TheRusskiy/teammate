@@ -12,7 +12,7 @@ type Tick = {
   processed: boolean
 }
 
-const TICK_MS = 30
+const TICK_MS = 33
 const DISCARD_TICKS_OLDER_THAN_MS = 3000
 
 export default class Game {
@@ -104,7 +104,6 @@ export default class Game {
         data: {
           ms: TICK_MS,
         },
-        server: true,
       })
       tick.stateAfter = state
       tick.processed = true

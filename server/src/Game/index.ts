@@ -8,7 +8,7 @@ type Tick = {
   actions: Action[]
   stateBefore: State
   stateAfter: State
-  time: Date
+  time: number
   processed: boolean
 }
 
@@ -43,6 +43,7 @@ export default class Game {
         server: true,
         type: "REMOVE_USER",
         data: { userId: newClient.getIdentifier() },
+        time: new Date().getTime(),
       }
       this.addActionToLastTick(action)
     }
@@ -63,7 +64,7 @@ export default class Game {
       stateBefore: null,
       stateAfter: initialState,
       actions: [],
-      time: new Date(),
+      time: new Date().getTime(),
       processed: true,
     }
     this.ticks.push(newTick)
@@ -84,7 +85,7 @@ export default class Game {
       stateBefore: lastTick.stateAfter,
       stateAfter: null,
       actions: [],
-      time: new Date(),
+      time: new Date().getTime(),
       processed: false,
     }
     this.ticks.push(newTick)
@@ -104,6 +105,8 @@ export default class Game {
         data: {
           ms: TICK_MS,
         },
+        time: new Date().getTime(),
+        server: true,
       })
       tick.stateAfter = state
       tick.processed = true
@@ -113,11 +116,12 @@ export default class Game {
   private discardOldTicks = () => {
     const lastTick = this.ticks[this.ticks.length - 1]
     const currentTime = lastTick.time
-    const discardBeforeTime = new Date(
-      currentTime.getTime() - DISCARD_TICKS_OLDER_THAN_MS
-    )
+    const discardBeforeTime = currentTime - DISCARD_TICKS_OLDER_THAN_MS
     this.ticks = this.ticks.filter(tick => {
-      const discard = tick.processed && tick.time < discardBeforeTime
+      const discard =
+        tick.processed &&
+        tick.time < discardBeforeTime &&
+        tick !== this.ticks[this.ticks.length - 1]
       return !discard
     })
   }
@@ -134,13 +138,20 @@ export default class Game {
     })
   }
 
-  private onClientCommand = (command: ClientCommand) => {
+  private onClientCommand = (command: ClientCommand, client: GameClient) => {
     switch (command.type) {
       case "JOIN_GAME": {
+        client.getTransport().sendServerCommand({
+          type: "SET_TIME",
+          data: {
+            unixTime: new Date().getTime(),
+          },
+        })
         const action: Action = {
           server: true,
           type: "ADD_USER",
           data: { user: { id: command.userId } },
+          time: new Date().getTime(),
         }
         this.addActionToLastTick(action)
         break
@@ -153,7 +164,17 @@ export default class Game {
   }
 
   private addActionToLastTick = (action: Action) => {
-    const lastTick = this.ticks[this.ticks.length - 1]
+    let lastTick = this.ticks[this.ticks.length - 1]
+    for (let i = this.ticks.length - 1; i >= 0; i--) {
+      const currTick = this.ticks[i]
+      if (currTick.time > action.time) {
+        currTick.processed = false
+        lastTick = currTick
+      } else {
+        break
+      }
+    }
+
     lastTick.actions.push(action)
     lastTick.processed = false
   }

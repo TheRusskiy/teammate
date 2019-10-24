@@ -1,7 +1,10 @@
 import { WebsocketTransport } from "../WebsocketTransport"
 import { ClientCommand } from "../shared/ClientCommand"
 
-export type OnClientCommand = (command: ClientCommand) => void
+export type OnClientCommand = (
+  command: ClientCommand,
+  client: GameClient
+) => void
 
 export default class GameClient {
   private transport: WebsocketTransport
@@ -24,7 +27,7 @@ export default class GameClient {
         console.warn("User Id doesn't match, command ignored")
         return
       }
-      callback(command)
+      callback(command, this)
     })
   }
 

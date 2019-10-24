@@ -3,7 +3,7 @@ import WebSocket from "ws"
 import { ClientCommand } from "../shared/ClientCommand"
 import _ from "lodash"
 import { ServerCommand } from "../shared/ServerCommand"
-import { OnClientCommand } from "../GameClient"
+export type OnTransportCommand = (command: ClientCommand) => void
 
 type OnConnected = (transport: WebsocketTransport) => void
 
@@ -18,7 +18,7 @@ type TransportOptions = {
 type removeCallback = () => void
 
 export type WebsocketTransport = {
-  onClientCommand: (callback: OnClientCommand) => void
+  onClientCommand: (callback: OnTransportCommand) => void
   onClose: (callback: OnClose) => void
   sendServerCommand: (serverCommand: ServerCommand) => void
 }
@@ -29,9 +29,9 @@ export default function WebsocketServer({
 }: TransportOptions): void {
   const wss = new WebSocket.Server({ server })
   wss.on("connection", function connection(ws) {
-    const onClientCommandListeners: OnClientCommand[] = []
+    const onClientCommandListeners: OnTransportCommand[] = []
 
-    const onClientCommand = (callback: OnClientCommand): removeCallback => {
+    const onClientCommand = (callback: OnTransportCommand): removeCallback => {
       onClientCommandListeners.push(callback)
       return () => {
         _.remove(onClientCommandListeners, callback)

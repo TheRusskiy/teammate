@@ -18,4 +18,14 @@ type IdGeneratedCommand = GenericCommand & {
   }
 }
 
-export type ServerCommand = SetStateCommand | IdGeneratedCommand
+type SetTimeCommand = GenericCommand & {
+  type: "SET_TIME"
+  data: {
+    unixTime: number
+  }
+}
+
+export type ServerCommand =
+  | SetStateCommand
+  | IdGeneratedCommand
+  | SetTimeCommand

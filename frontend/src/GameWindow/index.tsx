@@ -2,11 +2,15 @@ import React from "react"
 import { State, MAP_HEIGHT, MAP_WIDTH } from "../shared/State"
 import * as PIXI from "pixi.js"
 import GameRenderer from "../GameRenderer"
-import nextState from "../shared/nextState"
+// import nextState from "../shared/nextState"
 
-type Props = { gameState: State; setGameState: (gameState: State) => void }
+type Props = {
+  gameState: State
+  setGameState: (gameState: State) => void
+  serverTimeDelta: number
+}
 
-const TICK_MS = 33
+// const TICK_MS = 33
 
 class GameWindow extends React.Component<Props> {
   private root: HTMLElement | undefined

@@ -36,6 +36,14 @@ type ComponentState = {
 class GameContainer extends React.Component<Props> {
   state: ComponentState = {}
 
+  private initialDate?: number
+  private serverTimeDelta: number
+
+  constructor(props: Props) {
+    super(props)
+    this.serverTimeDelta = 0
+  }
+
   componentDidMount() {
     const onConnect = (t: Transport) => {
       console.log("connected")
@@ -45,7 +53,8 @@ class GameContainer extends React.Component<Props> {
       console.log("disconnected")
     }
 
-    // "ws://85.236.188.110:26501"
+    // ws://85.236.188.110:26501
+    // ws://b2ca92d9.ngrok.io
     const transport = WebsocketTransport({
       host: "ws://localhost:3001",
       onConnect,
@@ -72,7 +81,22 @@ class GameContainer extends React.Component<Props> {
         })
         break
       }
+      case "SET_TIME": {
+        this.updateServerTime(command.data.unixTime)
+      }
     }
+  }
+
+  updateServerTime = (timeOnServer: number) => {
+    if (!this.initialDate) {
+      throw new Error("Time is not set")
+    }
+    const now = new Date().getTime()
+    // approximate time to reach server
+    const latency = (now - this.initialDate) / 2
+
+    const timeOnServerShouldBe = now - latency
+    this.serverTimeDelta = Math.round(timeOnServerShouldBe - timeOnServer)
   }
 
   setGameState = (gameState: State) => {
@@ -89,10 +113,15 @@ class GameContainer extends React.Component<Props> {
 
   startGame = (event: MouseEvent) => {
     event.preventDefault()
+    const unixTime = new Date().getTime()
+    this.initialDate = unixTime
     if (!this.state.transport || !this.state.userId) return
     this.state.transport.command({
       type: "JOIN_GAME",
       userId: this.state.userId,
+      data: {
+        unixTime,
+      },
     })
   }
 
@@ -104,6 +133,7 @@ class GameContainer extends React.Component<Props> {
       data: {
         action: {
           type: "MOVE_TANK",
+          time: this.getCommandTime(),
           userId,
           data: {
             direction,
@@ -158,6 +188,7 @@ class GameContainer extends React.Component<Props> {
             <GameWindow
               gameState={gameState}
               setGameState={this.setGameState}
+              serverTimeDelta={this.serverTimeDelta}
             />
           )}
         </GameWindowWrapper>
@@ -188,6 +219,11 @@ class GameContainer extends React.Component<Props> {
         <pre>{JSON.stringify(gameState, null, 2)}</pre>
       </div>
     )
+  }
+
+  private getCommandTime = (): number => {
+    const now = new Date().getTime()
+    return now - this.serverTimeDelta
   }
 }
 

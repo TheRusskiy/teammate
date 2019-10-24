@@ -8,6 +8,9 @@ type GenericCommand = {
 
 type StartGameCommand = GenericCommand & {
   type: "JOIN_GAME"
+  data: {
+    unixTime: number
+  }
 }
 
 type ActionCommand = GenericCommand & {

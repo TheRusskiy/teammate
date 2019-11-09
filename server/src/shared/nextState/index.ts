@@ -5,6 +5,7 @@ import {
   TankState,
   TANK_WIDTH,
   TANK_HEIGHT,
+  TANK_GUN_HEIGHT,
   Position,
   MAP_WIDTH,
   MAP_HEIGHT,
@@ -57,7 +58,7 @@ const collision = (position1: Position, position2: Position): boolean => {
 }
 
 const insideMapBorder = (position: Position): boolean => {
-  const yOffset = -20
+  const yOffset = -TANK_HEIGHT
   const [x1, x2, y1, y2] = tankBounding(position)
   return (
     x1 > 0 &&
@@ -72,6 +73,8 @@ const insideMapBorder = (position: Position): boolean => {
 }
 
 const rad = (degrees: number): number => (degrees * Math.PI) / 180
+
+const degrees = (rad: number): number => (rad * 180) / Math.PI
 
 const reducer = (draft: MutableState, action?: Action) => {
   if (!action) return
@@ -88,8 +91,11 @@ const reducer = (draft: MutableState, action?: Action) => {
       const xSpeed = xMult * projectileSpeed
       const yMult = -Math.sin(rad(angle))
       const ySpeed = yMult * projectileSpeed
-      const initX = tank.x + 18 * xMult
-      const initY = tank.y + 18 * yMult + 28 / 2
+      const initX = tank.x + (TANK_HEIGHT / 2 + TANK_GUN_HEIGHT) * xMult
+      const initY =
+        tank.y +
+        (TANK_HEIGHT / 2 + TANK_GUN_HEIGHT) * yMult +
+        (TANK_HEIGHT + TANK_GUN_HEIGHT) / 2
       draft.projectiles.push({
         angle,
         x: initX - xSpeed,

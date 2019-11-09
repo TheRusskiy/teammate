@@ -19,4 +19,4 @@ const Keyboard: React.FC<Props> = ({ onPress, onRelease, keyValue }: Props) => {
   return null
 }
 
-export default Keyboard
+export default React.memo(Keyboard)

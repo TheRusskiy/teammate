@@ -5,6 +5,7 @@ import { Action } from "../shared/Action"
 import GameClient from "../GameClient"
 
 type Tick = {
+  i: number
   actions: Action[]
   stateBefore: State
   stateAfter: State
@@ -61,6 +62,7 @@ export default class Game {
   addInitialTick = () => {
     const initialState = nextState()
     const newTick: Tick = {
+      i: 0,
       stateBefore: null,
       stateAfter: initialState,
       actions: [],
@@ -82,6 +84,7 @@ export default class Game {
   private addTick = () => {
     const lastTick = this.ticks[this.ticks.length - 1]
     const newTick: Tick = {
+      i: lastTick.i + 1,
       stateBefore: lastTick.stateAfter,
       stateAfter: null,
       actions: [],
@@ -177,5 +180,6 @@ export default class Game {
 
     lastTick.actions.push(action)
     lastTick.processed = false
+    lastTick.stateAfter = null
   }
 }

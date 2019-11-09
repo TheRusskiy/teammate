@@ -1,8 +1,8 @@
 import React from "react"
 import { State, MAP_HEIGHT, MAP_WIDTH } from "../shared/State"
 import * as PIXI from "pixi.js"
-import GameRenderer from "../GameRenderer"
-// import nextState from "../shared/nextState"
+import GameCanvas from "../GameCanvas"
+import { render } from "react-pixi-fiber"
 
 type Props = {
   gameState: State
@@ -10,12 +10,14 @@ type Props = {
   serverTimeDelta: number
 }
 
-// const TICK_MS = 33
-
-class GameWindow extends React.Component<Props> {
+class GameWindow extends React.PureComponent<Props> {
   private root: HTMLElement | undefined
   private app: PIXI.Application | undefined
-  private renderer: GameRenderer | undefined
+
+  constructor(props: Props) {
+    super(props)
+    PIXI.utils.skipHello()
+  }
 
   componentDidMount(): void {
     const root = document.getElementById("game-window")
@@ -29,30 +31,18 @@ class GameWindow extends React.Component<Props> {
     root.appendChild(app.view)
     this.root = root
     this.app = app
-    this.renderer = new GameRenderer({ app })
     this.gameLoop()
-  }
-
-  getRenderer = (): GameRenderer => {
-    if (!this.renderer) throw new Error("Renderer is not initialized")
-    return this.renderer
   }
 
   gameLoop = () => {
     this.renderApp(this.props.gameState)
-    // const newState = nextState(this.props.gameState, {
-    //   type: 'TICK',
-    //   data: {
-    //     ms: TICK_MS
-    //   }
-    // })
-    // this.props.setGameState(newState)
-    // this.renderApp(this.props.gameState)
     requestAnimationFrame(this.gameLoop)
   }
 
   renderApp = (state: State) => {
-    this.getRenderer().render(state)
+    if (!this.app) return
+
+    render(<GameCanvas gameState={state} />, this.app.stage)
   }
 
   render() {

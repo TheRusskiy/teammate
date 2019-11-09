@@ -20,25 +20,19 @@ const initialState: State = {
   projectiles: [],
 }
 
-const setRotation = (tank: TankState) => {
-  const { ySpeed: y, xSpeed: x } = tank
-  if (x > 0 && y === 0) {
-    tank.rotation = 0
-  } else if (x > 0 && y < 0) {
-    tank.rotation = 45
-  } else if (x === 0 && y < 0) {
-    tank.rotation = 90
-  } else if (x < 0 && y < 0) {
-    tank.rotation = 135
-  } else if (x < 0 && y === 0) {
-    tank.rotation = 180
-  } else if (x < 0 && y > 0) {
-    tank.rotation = 225
-  } else if (x === 0 && y > 0) {
-    tank.rotation = 270
-  } else if (x > 0 && y > 0) {
-    tank.rotation = 315
+const getRotation = function(x: number, y: number, oldValue = 0) {
+  let rotation
+  if (y === 0 && x === 0) {
+    return oldValue
+  } else {
+    rotation = degrees(
+      Math.acos(x / Math.pow(Math.pow(x, 2) + Math.pow(Math.abs(y), 2), 0.5))
+    )
   }
+  if (y > 0) {
+    rotation = 360 - rotation
+  }
+  return rotation
 }
 
 const tankBounding = (tank: Position): number[] => {
@@ -141,7 +135,6 @@ const reducer = (draft: MutableState, action?: Action) => {
           break
         }
       }
-      setRotation(tank)
       return
     }
     case "TICK": {
@@ -177,7 +170,9 @@ const reducer = (draft: MutableState, action?: Action) => {
         if (tank.ySpeed < -3) {
           tank.ySpeed = -3
         }
+        tank.rotation = getRotation(tank.xSpeed, tank.ySpeed, tank.rotation)
       })
+
       const projectilesToRemove: ProjectileState[] = []
       draft.projectiles.forEach(prj => {
         const newPosition: Position = {

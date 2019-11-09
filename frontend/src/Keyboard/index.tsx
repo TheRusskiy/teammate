@@ -3,7 +3,7 @@ import keyboardSubscriber, { KeyValue } from "./keyboardSubscriber"
 
 type Props = {
   onPress: () => void
-  onRelease: () => void
+  onRelease?: () => void
   keyValue: KeyValue
 }
 

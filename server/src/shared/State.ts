@@ -18,10 +18,17 @@ export type TankState = Position & {
   rotation: number
 }
 
+export type ProjectileState = Position & {
+  xSpeed: number
+  ySpeed: number
+  angle: number
+}
+
 export type MutableState = {
   players: Player[]
   ms: number
   tanks: TankState[]
+  projectiles: ProjectileState[]
 }
 
 export type State = DeepReadonly<MutableState>

@@ -5,6 +5,7 @@ export type KeyValue =
   | "ArrowRight"
   | "Enter"
   | "Escape"
+  | "Space"
 
 type KeyType = {
   downHandler: EventListenerOrEventListenerObject
@@ -31,7 +32,7 @@ const keyboardSubscriber = (value: KeyValue) => {
   }
 
   key.upHandler = event => {
-    if ((event as KeyboardEvent).key === key.value) {
+    if ((event as KeyboardEvent).code === key.value) {
       if (state.isDown && key.release) {
         key.release()
       }
@@ -42,7 +43,7 @@ const keyboardSubscriber = (value: KeyValue) => {
   }
 
   key.downHandler = event => {
-    if ((event as KeyboardEvent).key === key.value) {
+    if ((event as KeyboardEvent).code === key.value) {
       if (state.isUp && key.press) {
         key.press()
       }

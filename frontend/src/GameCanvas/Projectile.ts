@@ -1,11 +1,11 @@
 import { CustomPIXIComponent } from "react-pixi-fiber"
 import * as PIXI from "pixi.js"
-import { TankState } from "../shared/State"
+import { ProjectileState } from "../shared/State"
 import { setCoords } from "./utils"
 
-const TYPE = "Tank"
+const TYPE = "Projectile"
 
-type Props = { tank: TankState }
+type Props = { projectile: ProjectileState }
 
 export const behavior = {
   customDisplayObject: (props: Props) => new PIXI.Graphics(),
@@ -15,14 +15,10 @@ export const behavior = {
     newProps: Props
   ) {
     instance.clear()
-    instance.beginFill(0x00aa00)
-    instance.drawRect(0, 0, 20, 20)
-    instance.drawRect(20, 8, 8, 4)
+    instance.beginFill(0xde3249)
+    instance.drawCircle(0, 0, 3)
     instance.endFill()
-    setCoords(instance, newProps.tank)
-    instance.angle = newProps.tank.rotation
-    instance.pivot = new PIXI.Point(10, 10)
+    setCoords(instance, newProps.projectile)
   },
 }
-
 export default CustomPIXIComponent(behavior, TYPE)

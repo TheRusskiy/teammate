@@ -176,6 +176,29 @@ class GameContainer extends React.Component<Props> {
     this.moveInDirection(this.state.transport, "stop-right")
   }
 
+  shoot = () => {
+    const transport = this.state.transport
+    const { userId, gameState } = this.state
+    if (!userId || !transport || !gameState) return
+    const tank = gameState.tanks.find(t => t.userId === userId)
+    if (!tank) return
+    transport.command({
+      type: "PLAYER_ACTION",
+      data: {
+        action: {
+          type: "TANK_SHOOT",
+          time: this.getCommandTime(),
+          userId,
+          data: {
+            userId,
+            angle: tank.rotation,
+          },
+        },
+      },
+      userId,
+    })
+  }
+
   render() {
     const { transport, gameState } = this.state
     return (
@@ -214,6 +237,7 @@ class GameContainer extends React.Component<Props> {
               onPress={this.moveRight}
               onRelease={this.stopMoveRight}
             />
+            <Keyboard keyValue="Space" onPress={this.shoot} />
           </>
         )}
         <pre>{JSON.stringify(gameState, null, 2)}</pre>

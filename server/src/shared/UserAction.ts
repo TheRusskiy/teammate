@@ -28,4 +28,12 @@ type ArrowAction = BaseUserAction & {
   }
 }
 
-export type UserAction = SomeAction | ArrowAction
+type ShootAction = BaseUserAction & {
+  type: "TANK_SHOOT"
+  data: {
+    userId: string
+    angle: number
+  }
+}
+
+export type UserAction = SomeAction | ArrowAction | ShootAction

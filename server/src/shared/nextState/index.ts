@@ -8,6 +8,7 @@ import {
   Position,
   MAP_WIDTH,
   MAP_HEIGHT,
+  ProjectileState,
 } from "../State"
 import produce from "immer"
 
@@ -15,6 +16,7 @@ const initialState: State = {
   players: [],
   ms: 0,
   tanks: [],
+  projectiles: [],
 }
 
 const setRotation = (tank: TankState) => {
@@ -55,7 +57,7 @@ const collision = (position1: Position, position2: Position): boolean => {
 }
 
 const insideMapBorder = (position: Position): boolean => {
-  const yOffset = -20 // dunno why
+  const yOffset = -20
   const [x1, x2, y1, y2] = tankBounding(position)
   return (
     x1 > 0 &&
@@ -69,11 +71,32 @@ const insideMapBorder = (position: Position): boolean => {
   )
 }
 
+const rad = (degrees: number): number => (degrees * Math.PI) / 180
+
 const reducer = (draft: MutableState, action?: Action) => {
   if (!action) return
 
   switch (action.type) {
     case "some-action":
+      return
+    case "TANK_SHOOT":
+      const tank = draft.tanks.find(t => t.userId === action.data.userId)
+      if (!tank) return
+      const angle = action.data.angle
+      const projectileSpeed = 5
+      const xMult = Math.cos(rad(angle))
+      const xSpeed = xMult * projectileSpeed
+      const yMult = -Math.sin(rad(angle))
+      const ySpeed = yMult * projectileSpeed
+      const initX = tank.x + 18 * xMult
+      const initY = tank.y + 18 * yMult + 28 / 2
+      draft.projectiles.push({
+        angle,
+        x: initX - xSpeed,
+        y: initY - ySpeed,
+        xSpeed,
+        ySpeed,
+      })
       return
     case "MOVE_TANK": {
       const tank = draft.tanks.find(t => t.userId === action.userId)
@@ -149,6 +172,22 @@ const reducer = (draft: MutableState, action?: Action) => {
           tank.ySpeed = -3
         }
       })
+      const projectilesToRemove: ProjectileState[] = []
+      draft.projectiles.forEach(prj => {
+        const newPosition: Position = {
+          x: prj.x + prj.xSpeed,
+          y: prj.y + prj.ySpeed,
+        }
+        const wouldHitBorder = !insideMapBorder(newPosition)
+        if (wouldHitBorder) {
+          projectilesToRemove.push(prj)
+        }
+        prj.x = newPosition.x
+        prj.y = newPosition.y
+      })
+      draft.projectiles = draft.projectiles.filter(
+        prj => !projectilesToRemove.includes(prj)
+      )
       return
     }
     case "ADD_USER": {

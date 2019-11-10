@@ -9,7 +9,7 @@ import FrontendGame from "../FrontendGame"
 import styled from "styled-components"
 import { ClientCommand } from "../../../server/src/shared/ClientCommand"
 
-const WEBSOCKET_HOST = process.env.HOST || 'localhost:3001'
+const WEBSOCKET_HOST = process.env.REACT_APP_WEBSOCKET_HOST || 'localhost:3001'
 
 const ControlsWrapper = styled.div`
   display: flex;

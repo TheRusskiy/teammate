@@ -2,7 +2,6 @@ import { Action } from "../Action"
 import {
   State,
   MutableState,
-  TankState,
   TANK_WIDTH,
   TANK_HEIGHT,
   TANK_GUN_HEIGHT,

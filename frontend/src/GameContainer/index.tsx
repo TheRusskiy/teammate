@@ -9,6 +9,8 @@ import FrontendGame from "../FrontendGame"
 import styled from "styled-components"
 import { ClientCommand } from "../../../server/src/shared/ClientCommand"
 
+const WEBSOCKET_HOST = process.env.HOST || 'localhost:3001'
+
 const ControlsWrapper = styled.div`
   display: flex;
   justify-content: center;
@@ -35,6 +37,9 @@ type ComponentState = {
   gameState?: State
   userId?: string
 }
+
+// const THROTTLE = 0
+
 class GameContainer extends React.Component<Props> {
   state: ComponentState = {}
 
@@ -60,7 +65,7 @@ class GameContainer extends React.Component<Props> {
     // ws://85.236.188.110:26501
     // ws://224c3ce2.ngrok.io
     const transport = WebsocketTransport({
-      host: "ws://localhost:3001",
+      host: `ws://${WEBSOCKET_HOST}`,
       onConnect,
       onClose,
       onMessage: this.onMessage,
@@ -81,9 +86,12 @@ class GameContainer extends React.Component<Props> {
     const command: ServerCommand = data
     switch (command.type) {
       case "SET_STATE": {
+        // setTimeout(() => {
+        // this.setGameState(command.data.state)
         if (this.game) {
           this.game.addServerTick(command.data.state, command.data.time)
         }
+        // }, THROTTLE)
         break
       }
       case "ID_GENERATED": {
@@ -93,7 +101,9 @@ class GameContainer extends React.Component<Props> {
         break
       }
       case "SET_TIME": {
+        // setTimeout(() => {
         this.updateServerTime(command.data.unixTime)
+        // }, THROTTLE)
       }
     }
   }

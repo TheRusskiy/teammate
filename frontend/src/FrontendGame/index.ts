@@ -1,7 +1,6 @@
 import { Action } from "../shared/Action"
 import { State } from "../shared/State"
 import nextState from "../shared/nextState"
-import GameClient from "../../../server/src/GameClient"
 import { ClientCommand } from "../../../server/src/shared/ClientCommand"
 
 type FrontendTick = {
@@ -79,31 +78,29 @@ export default class FrontendGame {
   }
 
   addServerTick = (state: State, time: number) => {
-    let insertAfterTickIndex = this.ticks.length - 1
-    let insertAfterTick = this.ticks[insertAfterTickIndex]
+    let replaceTickIndex = this.ticks.length - 1
+    let replaceTick = this.ticks[replaceTickIndex]
     for (let i = this.ticks.length - 1; i >= 0; i--) {
       const currTick = this.ticks[i]
       if (time < currTick.time) {
         currTick.processed = false
       } else {
-        insertAfterTickIndex = i
-        insertAfterTick = currTick
+        replaceTickIndex = i
+        replaceTick = currTick
         break
       }
     }
 
     const newTick: FrontendTick = {
-      i: insertAfterTick.i + 1,
+      i: replaceTick.i,
       processed: true,
       stateAfter: state,
-      stateBefore: insertAfterTick.stateAfter,
+      stateBefore: replaceTick.stateBefore,
       actions: [],
       time,
     }
 
-    insertAfterTick.processed = false
-
-    this.ticks.splice(insertAfterTickIndex, 1, newTick)
+    this.ticks.splice(replaceTickIndex, 1, newTick)
   }
 
   addInitialTick = () => {

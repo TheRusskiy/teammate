@@ -14,7 +14,7 @@ type Tick = {
 }
 
 const TICK_MS = 33
-const DISCARD_TICKS_OLDER_THAN_MS = 3000
+const DISCARD_TICKS_OLDER_THAN_MS = 5000
 
 export default class Game {
   private connectedClients: GameClient[]
@@ -135,6 +135,7 @@ export default class Game {
       client.getTransport().sendServerCommand({
         type: "SET_STATE",
         data: {
+          time: lastTick.time,
           state: lastTick.stateAfter,
         },
       })

@@ -137,7 +137,8 @@ const reducer = (draft: MutableState, action?: Action) => {
       }
       return
     }
-    case "TICK": {
+    case "TICK":
+    case "USER_TICK": {
       draft.ms += action.data.ms
       draft.tanks.forEach(tank => {
         const newPosition: Position = {

@@ -8,6 +8,7 @@ type GenericCommand = {
 type SetStateCommand = GenericCommand & {
   type: "SET_STATE"
   data: {
+    time: number
     state: State
   }
 }

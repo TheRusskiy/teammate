@@ -6,7 +6,6 @@ import { render } from "react-pixi-fiber"
 
 type Props = {
   gameState: State
-  setGameState: (gameState: State) => void
   serverTimeDelta: number
 }
 
@@ -31,12 +30,12 @@ class GameWindow extends React.PureComponent<Props> {
     root.appendChild(app.view)
     this.root = root
     this.app = app
-    this.gameLoop()
+    this.renderLoop()
   }
 
-  gameLoop = () => {
+  renderLoop = () => {
     this.renderApp(this.props.gameState)
-    requestAnimationFrame(this.gameLoop)
+    requestAnimationFrame(this.renderLoop)
   }
 
   renderApp = (state: State) => {

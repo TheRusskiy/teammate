@@ -5,7 +5,9 @@ import { State } from "../shared/State"
 import GameWindow from "../GameWindow"
 import { MoveDirection } from "../shared/UserAction"
 import Keyboard from "../Keyboard"
+import FrontendGame from "../FrontendGame"
 import styled from "styled-components"
+import { ClientCommand } from "../../../server/src/shared/ClientCommand"
 
 const ControlsWrapper = styled.div`
   display: flex;
@@ -38,6 +40,8 @@ class GameContainer extends React.Component<Props> {
 
   private initialDate?: number
   private serverTimeDelta: number
+  private game?: FrontendGame
+  private gameUnsubscribe?: () => void
 
   constructor(props: Props) {
     super(props)
@@ -54,7 +58,7 @@ class GameContainer extends React.Component<Props> {
     }
 
     // ws://85.236.188.110:26501
-    // ws://b2ca92d9.ngrok.io
+    // ws://224c3ce2.ngrok.io
     const transport = WebsocketTransport({
       host: "ws://localhost:3001",
       onConnect,
@@ -65,14 +69,21 @@ class GameContainer extends React.Component<Props> {
     this.setState({
       transport,
     })
+
+    this.game = new FrontendGame()
+    this.gameUnsubscribe = this.game.subscribe((gameState: State) => {
+      this.setGameState(gameState)
+    })
+    this.game.start()
   }
 
   onMessage = (data: any) => {
     const command: ServerCommand = data
-    // console.log(command)
     switch (command.type) {
       case "SET_STATE": {
-        this.setGameState(command.data.state)
+        if (this.game) {
+          this.game.addServerTick(command.data.state, command.data.time)
+        }
         break
       }
       case "ID_GENERATED": {
@@ -97,6 +108,8 @@ class GameContainer extends React.Component<Props> {
 
     const timeOnServerShouldBe = now - latency
     this.serverTimeDelta = Math.round(timeOnServerShouldBe - timeOnServer)
+    if (!this.game) throw new Error("Game is not initialized")
+    this.game.setServerTimeDelta(this.serverTimeDelta)
   }
 
   setGameState = (gameState: State) => {
@@ -109,6 +122,12 @@ class GameContainer extends React.Component<Props> {
     if (this.state.transport) {
       this.state.transport.close()
     }
+    if (this.gameUnsubscribe) {
+      this.gameUnsubscribe()
+    }
+    if (this.game) {
+      this.game.stop()
+    }
   }
 
   startGame = (event: MouseEvent) => {
@@ -116,7 +135,7 @@ class GameContainer extends React.Component<Props> {
     const unixTime = new Date().getTime()
     this.initialDate = unixTime
     if (!this.state.transport || !this.state.userId) return
-    this.state.transport.command({
+    this.executeClientCommand({
       type: "JOIN_GAME",
       userId: this.state.userId,
       data: {
@@ -125,10 +144,21 @@ class GameContainer extends React.Component<Props> {
     })
   }
 
-  moveInDirection = (transport?: Transport, direction?: MoveDirection) => {
-    const { userId } = this.state
-    if (!userId || !transport || !direction) return
-    transport.command({
+  executeClientCommand = (command: ClientCommand) => {
+    const transport: Transport | undefined = this.state.transport
+    const userId: string | undefined = this.state.userId
+    const game = this.game
+    if (!transport || !userId || !game) return
+    game.onClientCommand(command)
+    transport.command(command)
+  }
+
+  moveInDirection = (direction?: MoveDirection) => {
+    const userId = this.state.userId
+
+    if (!direction || !userId) return
+
+    this.executeClientCommand({
       type: "PLAYER_ACTION",
       data: {
         action: {
@@ -138,6 +168,7 @@ class GameContainer extends React.Component<Props> {
           data: {
             direction,
           },
+          server: false,
         },
       },
       userId,
@@ -145,44 +176,43 @@ class GameContainer extends React.Component<Props> {
   }
 
   moveUp = () => {
-    this.moveInDirection(this.state.transport, "up")
+    this.moveInDirection("up")
   }
 
   stopMoveUp = () => {
-    this.moveInDirection(this.state.transport, "stop-up")
+    this.moveInDirection("stop-up")
   }
 
   moveDown = () => {
-    this.moveInDirection(this.state.transport, "down")
+    this.moveInDirection("down")
   }
 
   stopMoveDown = () => {
-    this.moveInDirection(this.state.transport, "stop-down")
+    this.moveInDirection("stop-down")
   }
 
   moveLeft = () => {
-    this.moveInDirection(this.state.transport, "left")
+    this.moveInDirection("left")
   }
 
   stopMoveLeft = () => {
-    this.moveInDirection(this.state.transport, "stop-left")
+    this.moveInDirection("stop-left")
   }
 
   moveRight = () => {
-    this.moveInDirection(this.state.transport, "right")
+    this.moveInDirection("right")
   }
 
   stopMoveRight = () => {
-    this.moveInDirection(this.state.transport, "stop-right")
+    this.moveInDirection("stop-right")
   }
 
   shoot = () => {
-    const transport = this.state.transport
     const { userId, gameState } = this.state
-    if (!userId || !transport || !gameState) return
+    if (!userId || !gameState) return
     const tank = gameState.tanks.find(t => t.userId === userId)
     if (!tank) return
-    transport.command({
+    this.executeClientCommand({
       type: "PLAYER_ACTION",
       data: {
         action: {
@@ -193,6 +223,7 @@ class GameContainer extends React.Component<Props> {
             userId,
             angle: tank.rotation,
           },
+          server: false,
         },
       },
       userId,
@@ -210,7 +241,6 @@ class GameContainer extends React.Component<Props> {
           {gameState && (
             <GameWindow
               gameState={gameState}
-              setGameState={this.setGameState}
               serverTimeDelta={this.serverTimeDelta}
             />
           )}

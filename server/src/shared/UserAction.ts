@@ -2,6 +2,7 @@ import { BaseAction } from "./BaseAction"
 
 type BaseUserAction = BaseAction & {
   userId: string
+  server: false
 }
 
 type SomeAction = BaseUserAction & {
@@ -36,4 +37,11 @@ type ShootAction = BaseUserAction & {
   }
 }
 
-export type UserAction = SomeAction | ArrowAction | ShootAction
+type UserTickAction = BaseUserAction & {
+  type: "USER_TICK"
+  data: {
+    ms: number
+  }
+}
+
+export type UserAction = SomeAction | ArrowAction | ShootAction | UserTickAction
